@@ -21,6 +21,7 @@ Role Variables
         users:
           - name: azmo
             fullname: Gordon Schulz
+            group: users
             groups: sudo
             uid: 1337
             password: '<pwd-hash>'
