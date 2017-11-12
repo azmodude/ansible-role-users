@@ -14,7 +14,7 @@
       comment: "{{ item.fullname | default(omit)}}"
       password: "{{ item.password | default(omit)}}"
       uid: "{{ item.uid | default(omit) }}"
-      shell: "{{ item.shell | default(default_shell) }}"
+      shell: "{{ item.shell | default(omit) }}"
       group: "{{ item.group | default(omit)}}"
       home: "{{ item.home | default(omit) }}"
       groups: "{{ item.groups | default(omit) }}"
@@ -44,7 +44,7 @@
     with_items: "{{ usercreation.results }}"
     loop_control:
       label: "{{ item.name }}"
-    when: "{{ item.expire_password | default(False) }} and {{ item.changed }}"
+    when: usercreation is defined and item.expire_password is defined and item_expire_password and item.changed
 
   - name: Add public key(s) for users
     authorized_key:
@@ -54,6 +54,7 @@
     with_subelements:
       - "{{ users }}"
       - ssh_keys
+      - skip_missing: True
     loop_control:
       label: "{{ item.0.name }}"
 

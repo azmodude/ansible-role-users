@@ -1,5 +1,4 @@
 ---
-default_shell: '/bin/bash'
 users_groups: []
 users: []
 users_deleted: []
