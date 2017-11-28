@@ -1,68 +1,71 @@
 ---
-  - name: Create groups
-    group:
-      name: "{{ item.name }}"
-      gid: "{{ item.gid | default(omit) }}"
-      system: "{{ item.system | default(omit) }}"
-    with_items: "{{ users_groups }}"
-    loop_control:
-      label: "{{ item.name }}"
+- name: Create user and groups
+  block:
+    - name: Create groups
+      group:
+        name: "{{ item.name }}"
+        gid: "{{ item.gid | default(omit) }}"
+        system: "{{ item.system | default(omit) }}"
+      with_items: "{{ users_groups }}"
+      loop_control:
+        label: "{{ item.name }}"
 
-  - name: Create users
-    user:
-      name: "{{ item.name }}"
-      comment: "{{ item.fullname | default(omit)}}"
-      password: "{{ item.password | default(omit)}}"
-      uid: "{{ item.uid | default(omit) }}"
-      shell: "{{ item.shell | default(omit) }}"
-      group: "{{ item.group | default(omit)}}"
-      home: "{{ item.home | default(omit) }}"
-      groups: "{{ item.groups | default(omit) }}"
-      system: "{{ item.system | default(omit) }}"
-      createhome: "{{ item.createhome | default(True) }}"
-      update_password: on_create
-    with_items: "{{ users }} "
-    loop_control:
-      label: "{{ item.name }}"
-    register: usercreation
+    - name: Create users
+      user:
+        name: "{{ item.name }}"
+        comment: "{{ item.fullname | default(omit)}}"
+        password: "{{ item.password | default(omit)}}"
+        uid: "{{ item.uid | default(omit) }}"
+        shell: "{{ item.shell | default(omit) }}"
+        group: "{{ item.group | default(omit)}}"
+        home: "{{ item.home | default(omit) }}"
+        groups: "{{ item.groups | default(omit) }}"
+        system: "{{ item.system | default(omit) }}"
+        createhome: "{{ item.createhome | default(True) }}"
+        update_password: on_create
+      with_items: "{{ users }} "
+      loop_control:
+        label: "{{ item.name }}"
+      register: usercreation
 
-  - name: Setup user profiles
-    blockinfile:
-      block: "{{ item.profile }}"
-      dest: "{{ item.home | default('/home/' + item.name) }}/.profile"
-      owner: "{{ item.name }}"
-      group: "{{ item.group | default(omit) }}"
-      mode: 0644
-      create: true
-    with_items: "{{ users }} "
-    loop_control:
-      label: "{{ item.name }}"
-    when: item.profile is defined
+    - name: Setup user profiles
+      blockinfile:
+        block: "{{ item.profile }}"
+        dest: "{{ item.home | default('/home/' + item.name) }}/.profile"
+        owner: "{{ item.name }}"
+        group: "{{ item.group | default(omit) }}"
+        mode: 0644
+        create: true
+      with_items: "{{ users }} "
+      loop_control:
+        label: "{{ item.name }}"
+      when: item.profile is defined
 
-  - name: Expire user password
-    command: /usr/bin/chage -d 0 {{ item.name }}
-    with_items: "{{ usercreation.results }}"
-    loop_control:
-      label: "{{ item.name }}"
-    when: usercreation is defined and item.expire_password is defined and item_expire_password and item.changed
+    - name: Expire user password
+      command: /usr/bin/chage -d 0 {{ item.name }}
+      with_items: "{{ usercreation.results }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: usercreation is defined and item.expire_password is defined and item_expire_password and item.changed
 
-  - name: Add public key(s) for users
-    authorized_key:
-      user: "{{ item.0.name }}"
-      key: " {{ item.1 }}"
-      path: "{{ item.0.home | default('/home/' + item.0.name) }}/.ssh/authorized_keys"
-    with_subelements:
-      - "{{ users }}"
-      - ssh_keys
-      - skip_missing: True
-    loop_control:
-      label: "{{ item.0.name }}"
+    - name: Add public key(s) for users
+      authorized_key:
+        user: "{{ item.0.name }}"
+        key: " {{ item.1 }}"
+        path: "{{ item.0.home | default('/home/' + item.0.name) }}/.ssh/authorized_keys"
+      with_subelements:
+        - "{{ users }}"
+        - ssh_keys
+        - skip_missing: True
+      loop_control:
+        label: "{{ item.0.name }}"
 
-  - name: Delete users
-    user:
-      name: "{{ item.name }}"
-      state: absent
-    with_items: "{{ users_deleted }}"
-    loop_control:
-      label: "{{ item.name }}"
+    - name: Delete users
+      user:
+        name: "{{ item.name }}"
+        state: absent
+      with_items: "{{ users_deleted }}"
+      loop_control:
+        label: "{{ item.name }}"
+  become: True
 
