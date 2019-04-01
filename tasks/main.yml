@@ -20,6 +20,7 @@
         group: "{{ item.group | default(omit)}}"
         home: "{{ item.home | default(omit) }}"
         groups: "{{ item.groups | default(omit) }}"
+        append: "{{ item.append | default(false) }}"
         system: "{{ item.system | default(omit) }}"
         createhome: "{{ item.createhome | default(True) }}"
         update_password: on_create
