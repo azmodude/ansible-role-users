@@ -13,14 +13,14 @@
     - name: Create users
       user:
         name: "{{ item.name }}"
-        comment: "{{ item.fullname | default(omit)}}"
-        password: "{{ item.password | default(omit)}}"
+        comment: "{{ item.fullname | default(omit) }}"
+        password: "{{ item.password | default(omit) }}"
         uid: "{{ item.uid | default(omit) }}"
         shell: "{{ item.shell | default(omit) }}"
-        group: "{{ item.group | default(omit)}}"
+        group: "{{ item.group | default(omit) }}"
         home: "{{ item.home | default(omit) }}"
         groups: "{{ item.groups | default(omit) }}"
-        append: "{{ item.append | default(false) }}"
+        groups_append: "{{ item.groups_append | default(false) }}"
         system: "{{ item.system | default(omit) }}"
         createhome: "{{ item.createhome | default(True) }}"
         update_password: on_create
@@ -68,5 +68,4 @@
       with_items: "{{ users_deleted }}"
       loop_control:
         label: "{{ item.name }}"
-  become: True
-
+  become: true
