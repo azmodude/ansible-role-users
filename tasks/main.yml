@@ -61,11 +61,10 @@
       authorized_key:
         user: "{{ item.0.name }}"
         key: " {{ item.1 }}"
-        path: "{{ item.0.home | default('/home/' + item.0.name) }}/.ssh/authorized_keys"
       with_subelements:
         - "{{ users }}"
         - ssh_keys
-        - skip_missing: True
+        - skip_missing: true
       loop_control:
         label: "{{ item.0.name }}"
 
