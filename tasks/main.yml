@@ -1,6 +1,13 @@
 ---
 - name: Create user and groups
   block:
+    - name: Make sure users' primary groups exist
+      group:
+        name: "{{ item.group }}"
+        system: false
+      loop: "{{ users }}"
+      when: item.group is defined
+
     - name: Create groups
       group:
         name: "{{ item.name }}"
