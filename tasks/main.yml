@@ -14,7 +14,7 @@
       user:
         name: "{{ item.name }}"
         comment: "{{ item.fullname | default(omit) }}"
-        password: "{{ item.password | default(omit) }}"
+        password: "{{ item.password | default(omit) | password_hash('sha512', password_salt) }}"
         uid: "{{ item.uid | default(omit) }}"
         shell: "{{ item.shell | default(omit) }}"
         group: "{{ item.group | default(omit) }}"
@@ -23,10 +23,11 @@
         append: "{{ item.groups_append | default(false) }}"
         system: "{{ item.system | default(omit) }}"
         createhome: "{{ item.createhome | default(True) }}"
-        update_password: on_create
+        update_password: "{{ update_password }}"
       with_items: "{{ users }} "
       loop_control:
         label: "{{ item.name }}"
+      no_log: true
       register: usercreation
 
     - name: Setup user profiles

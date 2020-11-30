@@ -2,4 +2,5 @@
 users_groups: []
 users: []
 users_deleted: []
-
+password_salt: 'change_me'
+update_password: always
