@@ -4,9 +4,10 @@
     - name: Make sure users' primary groups exist
       group:
         name: "{{ item.group }}"
+        gid: "{{ item.gid }}"
         system: false
       loop: "{{ users }}"
-      when: item.group is defined
+      when: item.group is defined and item.gid is defined
 
     - name: Create groups
       group:
