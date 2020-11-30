@@ -8,6 +8,7 @@
         system: false
       loop: "{{ users }}"
       when: item.group is defined and item.gid is defined
+      no_log: true
 
     - name: Create groups
       group:
