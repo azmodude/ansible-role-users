@@ -18,6 +18,7 @@
       with_items: "{{ users_groups }}"
       loop_control:
         label: "{{ item.name }}"
+      no_log: true
 
     - name: Create users
       user:
