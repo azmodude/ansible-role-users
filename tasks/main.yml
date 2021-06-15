@@ -24,7 +24,7 @@
       user:
         name: "{{ item.name }}"
         comment: "{{ item.fullname | default(omit) }}"
-        password: "{{ item.password | default(omit) | password_hash('sha512', password_salt) }}"
+        password: "{{ item.password | default(omit) | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
         uid: "{{ item.uid | default(omit) }}"
         shell: "{{ item.shell | default(omit) }}"
         group: "{{ item.group | default(omit) }}"
